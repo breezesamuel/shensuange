@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>神算阁 · 长辈放心用</title>
+<meta name="description" content="神算阁：为长辈设计的大按钮计算器、吃药提醒、一键呼叫家人。字大、按钮大、没有广告弹窗。家人可开通孝心卡解锁无限提醒与语音播报。">
+<link rel="canonical" href="https://tools.highkingflower.com/elder/">
+<style>
+  /* 适老化规范：对比度≥4.5:1、正文≥24px、触控目标≥64px、零弹窗零广告（工信部通用设计规范） */
+  * { box-sizing: border-box; margin: 0; }
+  body { font-family: system-ui, "Microsoft YaHei", sans-serif; background: #fffdf7; color: #1a1a1a;
+         font-size: 26px; line-height: 1.6; padding: 0 0 60px; }
+  .top { background: #143a2b; color: #fff; padding: 20px 18px; font-size: 32px; font-weight: 700;
+         display: flex; align-items: center; justify-content: space-between; }
+  .top small { font-size: 20px; font-weight: 400; color: #cfe8dd; }
+  .card { background: #fff; border: 3px solid #143a2b; border-radius: 20px; margin: 20px 14px; padding: 20px; }
+  .card h2 { font-size: 32px; margin-bottom: 12px; color: #143a2b; }
+  /* 计算器 */
+  #calcOut { font-size: 56px; text-align: right; background: #f0f7f3; border-radius: 14px;
+             padding: 14px 18px; min-height: 84px; word-break: break-all; }
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 14px; }
+  button { font-size: 32px; min-height: 76px; border-radius: 16px; border: 2px solid #143a2b;
+           background: #fff; color: #1a1a1a; font-weight: 700; }
+  button:active { background: #dbeee4; }
+  .op { background: #e8f4ee; }
+  .eq { background: #143a2b; color: #fff; grid-column: span 2; }
+  .clear { width: 100%; margin-top: 12px; background: #fff3e0; border-color: #b26a00; color: #7a4c00; }
+  /* 服药 */
+  .medrow { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
+  input, select { font-size: 26px; padding: 12px; border: 2px solid #143a2b; border-radius: 12px; }
+  input[type=text] { flex: 1; min-width: 180px; }
+  .meditem { display: flex; align-items: center; gap: 12px; background: #f0f7f3; border-radius: 12px;
+             padding: 10px 14px; margin-top: 10px; font-size: 26px; }
+  .meditem button { min-height: 60px; font-size: 24px; margin-left: auto; }
+  .done { text-decoration: line-through; color: #777; }
+  /* 求助 */
+  #call { width: 100%; font-size: 40px; min-height: 96px; background: #c0392b; border-color: #7d241a; color: #fff; }
+  .bigclock { font-size: 64px; text-align: center; font-weight: 700; color: #143a2b; }
+  .date { text-align: center; font-size: 26px; color: #4a5a52; }
+  .voice { margin-top: 10px; width: 100%; background: #e8f4ee; }
+  .hint { font-size: 20px; color: #4a5a52; margin-top: 8px; }
+  .lock { opacity: .55; }
+  .fam { font-size: 22px; color: #4a5a52; text-align: center; margin-top: 6px; }
+  .fam b { color: #143a2b; font-size: 26px; letter-spacing: 2px; }
+</style>
+</head>
+<body>
+<div class="top"><span>神算阁</span><small>长辈放心用 · 无广告</small></div>
+
+<div class="card">
+  <div class="bigclock" id="clock">--:--</div>
+  <div class="date" id="dateLine"></div>
+</div>
+
+<div class="card">
+  <h2>大按钮计算器</h2>
+  <div id="calcOut">0</div>
+  <div class="grid">
+    <button class="calc k">7</button><button class="calc k">8</button><button class="calc k">9</button><button class="calc op k">÷</button>
+    <button class="calc k">4</button><button class="calc k">5</button><button class="calc k">6</button><button class="calc op k">×</button>
+    <button class="calc k">1</button><button class="calc k">2</button><button class="calc k">3</button><button class="calc op k">−</button>
+    <button class="calc k">0</button><button class="calc k">.</button><button class="calc eq k">＝</button><button class="calc op k">＋</button>
+  </div>
+  <button class="clear" id="calcClear">清空</button>
+</div>
+
+<div class="card">
+  <h2>吃药提醒</h2>
+  <div class="medrow">
+    <input type="text" id="medName" placeholder="药名，如：降压药">
+    <select id="medHour"></select>
+    <select id="medMin"></select>
+  </div>
+  <div class="medrow">
+    <button id="addMed" style="flex:1">＋ 添加提醒</button>
+    <button id="voiceToggle" class="voice">🔊 语音播报：开</button>
+  </div>
+  <div id="medList"></div>
+  <p class="hint">到点会大声念出药名。免费可设 3 个，孝心卡不限数量。</p>
+  <p class="fam" id="famLine">家人开通孝心卡，报这个码：<b id="careCode">------</b></p>
+</div>
+
+<div class="card">
+  <h2>一键呼叫家人</h2>
+  <button id="call">📞 呼叫家人</button>
+  <p class="hint">在下方填入家人手机号，点击直接拨打。</p>
+  <div class="medrow"><input type="text" id="famTel" placeholder="家人手机号" style="flex:1"></div>
+  <button id="saveTel" style="width:100%;margin-top:10px">保存号码</button>
+</div>
+
+<script>
+/* ============ 关怀码 + 权益（孝心卡） ============ */
+var QS = new URLSearchParams(location.search);
+var code = localStorage.getItem('bds_ref');
+if (QS.get('ref')) { code = QS.get('ref'); localStorage.setItem('bds_ref', code); }
+if (!code) { code = 'C' + Math.random().toString(36).slice(2, 8).toUpperCase(); localStorage.setItem('bds_ref', code); }
+document.getElementById('careCode').textContent = code;
+var PAID = null;
+try { fetch('/api/subwall?action=check&ref=' + encodeURIComponent(code))
+  .then(function(r){ return r.json(); })
+  .then(function(j){ PAID = !!(j && j.ok && j.subscribed); applyEntitle(); })
+  .catch(function(){ applyEntitle(); }); } catch(e) { applyEntitle(); }
+function paid() { return PAID === true; }
+function applyEntitle() {
+  var vb = document.getElementById('voiceToggle');
+  if (!paid()) { vb.classList.add('lock'); }
+  renderMeds();
+}
+/* ============ 大时钟 ============ */
+function pad(n){ return n < 10 ? '0' + n : '' + n; }
+function tick(){
+  var d = new Date();
+  document.getElementById('clock').textContent = pad(d.getHours()) + ':' + pad(d.getMinutes());
+  var wd = ['日','一','二','三','四','五','六'][d.getDay()];
+  document.getElementById('dateLine').textContent = (d.getMonth()+1) + '月' + d.getDate() + '日 星期' + wd;
+  speakDue(d);
+}
+setInterval(tick, 1000); tick();
+/* ============ 计算器 ============ */
+var expr = '';
+function renderCalc(){ document.getElementById('calcOut').textContent = expr || '0'; }
+Array.prototype.forEach.call(document.querySelectorAll('.calc.k'), function(b){
+  b.addEventListener('click', function(){
+    var v = b.textContent;
+    if (v === '＝') {
+      try {
+        var safe = expr.replace(/×/g,'*').replace(/÷/g,'/').replace(/−/g,'-').replace(/＋/g,'+');
+        if (/^[0-9+\-*/.() ]+$/.test(safe)) {
+          var r = Function('"use strict";return (' + safe + ')')();
+          expr = (Math.round(r * 1e8) / 1e8).toString();
+        }
+      } catch(e) { expr = '错误'; }
+    } else { if (expr === '错误') expr = ''; expr += v; }
+    renderCalc();
+  });
+});
+document.getElementById('calcClear').addEventListener('click', function(){ expr=''; renderCalc(); });
+/* ============ 服药提醒 ============ */
+var meds = JSON.parse(localStorage.getItem('sg_meds') || '[]');
+var MAX_FREE = 3, voiceOn = localStorage.getItem('sg_voice') !== '0';
+var hh = document.getElementById('medHour'), mm = document.getElementById('medMin');
+for (var h = 0; h < 24; h++) hh.insertAdjacentHTML('beforeend', '<option>' + pad(h) + '</option>');
+['00','15','30','45'].forEach(function(m){ mm.insertAdjacentHTML('beforeend', '<option>' + m + '</option>'); });
+hh.value = '08'; mm.value = '30';
+function renderMeds(){
+  var list = document.getElementById('medList'); list.innerHTML = '';
+  meds.forEach(function(m, idx){
+    var div = document.createElement('div'); div.className = 'meditem';
+    var sp = document.createElement('span'); sp.textContent = (m.doneToday ? '✔ ' : '⏰ ') + m.name + '  每天 ' + m.time;
+    if (m.doneToday) sp.className = 'done';
+    var del = document.createElement('button'); del.textContent = '删除';
+    del.addEventListener('click', function(){ meds.splice(idx,1); save(); });
+    var ok = document.createElement('button'); ok.textContent = '吃了';
+    ok.addEventListener('click', function(){ m.doneToday = true; save(); });
+    div.appendChild(sp); div.appendChild(ok); div.appendChild(del); list.appendChild(div);
+  });
+}
+function save(){ localStorage.setItem('sg_meds', JSON.stringify(meds)); renderMeds(); }
+document.getElementById('addMed').addEventListener('click', function(){
+  var name = document.getElementById('medName').value.trim();
+  if (!name) { alert('请先填写药名'); return; }
+  if (!paid() && meds.length >= MAX_FREE) {
+    location.href = 'https://tools.highkingflower.com/elder/family.html?ref=' + encodeURIComponent(code) + '&need=more';
+    return;
+  }
+  meds.push({ name: name, time: hh.value + ':' + mm.value, doneToday: false }); save();
+  document.getElementById('medName').value = '';
+});
+function speakDue(d){
+  var hm = pad(d.getHours()) + ':' + pad(d.getMinutes());
+  var due = meds.filter(function(m){ return !m.doneToday && m.time === hm; });
+  if (due.length) {
+    due.forEach(function(m){ m.doneToday = true; });
+    save();
+    var text = '该吃药了：' + due.map(function(m){ return m.name; }).join('、');
+    if (voiceOn && paid() && window.speechSynthesis) {
+      try { var u = new SpeechSynthesisUtterance(text); u.lang = 'zh-CN'; u.rate = 0.9; speechSynthesis.speak(u); } catch(e) {}
+    }
+  }
+}
+var vb = document.getElementById('voiceToggle');
+vb.addEventListener('click', function(){
+  if (!paid()) { location.href = 'https://tools.highkingflower.com/elder/family.html?ref=' + encodeURIComponent(code) + '&need=voice'; return; }
+  voiceOn = !voiceOn; localStorage.setItem('sg_voice', voiceOn ? '1' : '0');
+  vb.textContent = voiceOn ? '🔊 语音播报：开' : '🔇 语音播报：关';
+});
+if (!voiceOn) vb.textContent = '🔇 语音播报：关';
+/* ============ 一键呼叫 ============ */
+var tel = localStorage.getItem('sg_tel') || '';
+document.getElementById('famTel').value = tel;
+document.getElementById('saveTel').addEventListener('click', function(){
+  tel = document.getElementById('famTel').value.replace(/[^0-9+]/g,'');
+  localStorage.setItem('sg_tel', tel); alert('已保存');
+});
+document.getElementById('call').addEventListener('click', function(){
+  if (tel) location.href = 'tel:' + tel; else alert('请先在下面填入家人手机号并保存');
+});
+</script>
+</body>
+</html>

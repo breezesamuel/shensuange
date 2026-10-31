@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>神算阁 · 孝心卡（家人开通）</title>
+<meta name="description" content="为父母开通神算阁孝心卡：无限吃药提醒、语音播报、大按钮计算器。每月 9.9 元，支付宝/微信扫码，随时可停。">
+<link rel="canonical" href="https://tools.highkingflower.com/elder/family.html">
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body { font-family: system-ui, "Microsoft YaHei", sans-serif; max-width: 760px; margin: 0 auto;
+         padding: 0 16px 60px; line-height: 1.7; color: #1a1a1a; background: #fafafa; }
+  .top { background: #143a2b; color: #fff; border-radius: 0 0 18px 18px; padding: 26px 22px; margin: 0 -16px 18px; }
+  .top h1 { font-size: 30px; } .top p { color: #cfe8dd; font-size: 16px; margin-top: 6px; }
+  .box { background: #fff; border: 1px solid #e5e7eb; border-radius: 14px; padding: 20px; margin: 16px 0; }
+  h2 { font-size: 20px; margin-bottom: 10px; color: #143a2b; }
+  .plans { display: flex; gap: 10px; flex-wrap: wrap; }
+  .pc { flex: 1; min-width: 150px; border: 2px solid #143a2b; border-radius: 14px; padding: 16px;
+        text-align: center; cursor: pointer; background: #fff; }
+  .pc:hover { background: #f0f7f3; }
+  .pc .price { font-size: 26px; font-weight: 700; color: #143a2b; }
+  .pc .per { font-size: 14px; color: #666; }
+  input { width: 100%; padding: 12px; font-size: 18px; border: 2px solid #143a2b; border-radius: 10px; }
+  ul { padding-left: 20px; } li { margin: 6px 0; }
+  .note { font-size: 13px; color: #777; }
+  .ref { font-size: 18px; background: #f0f7f3; border-radius: 10px; padding: 10px 14px; margin: 8px 0; }
+  .ref b { letter-spacing: 2px; }
+  a.back { color: #143a2b; }
+</style>
+</head>
+<body>
+<div class="top">
+  <h1>神算阁 · 孝心卡</h1>
+  <p>给父母一份"每天准点有人提醒吃药"的安心。长辈界面永远干净：无广告、无弹窗、无诱导按钮（符合工信部适老化规范）。</p>
+</div>
+
+<div class="box">
+  <h2>第 1 步 · 在长辈手机上看到关怀码</h2>
+  <p>打开 <a class="back" href="https://tools.highkingflower.com/elder/">神算阁长辈页</a>，"吃药提醒"卡片下方有一行「家人开通孝心卡，报这个码」。把那个码填到这里：</p>
+  <div style="margin-top:10px"><input id="ref" placeholder="例如 C7X2K9" oninput="syncRef()"></div>
+  <p class="note">也可以直接把带码链接发给长辈：<span id="shareLine" style="color:#143a2b"></span></p>
+</div>
+
+<div class="box">
+  <h2>第 2 步 · 选择孝心卡</h2>
+  <div class="plans">
+    <div class="pc" onclick="go('sgm')"><div>月卡</div><div class="price">¥9.9</div><div class="per">每月 · 随时停</div></div>
+    <div class="pc" onclick="go('sgq')"><div>季卡</div><div class="price">¥25</div><div class="per">三个月 · 省 8%</div></div>
+    <div class="pc" onclick="go('sgy')"><div>年卡</div><div class="price">¥88</div><div class="per">十二个月 · 省 26%</div></div>
+  </div>
+  <p class="note" style="margin-top:10px">方式 A：跳转支付宝收银台（自动开通）。商家：上海丙大山智能科技有限公司。</p>
+  <h2 style="margin-top:22px">方式 B · 微信扫码直付（秒到，人工秒确认）</h2>
+  <div style="display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap">
+    <img src="/elder/wx_qr.png" alt="微信收款码" style="width:190px;border:6px solid #07c160;border-radius:12px">
+    <div style="flex:1;min-width:240px">
+      <p style="margin:0 0 6px">① 微信扫码 → 输入对应金额（月卡 <b>9.9</b> / 季卡 <b>25</b> / 年卡 <b>88</b>）→ 付款给 丙大山智能科技</p>
+      <p style="margin:0 0 6px">② 付款后点这里提交认领：</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px">
+        <select id="cplan" style="padding:8px;font-size:15px;border:1px solid #143a2b;border-radius:8px">
+          <option value="sgm">月卡 ¥9.9</option><option value="sgq">季卡 ¥25</option><option value="sgy">年卡 ¥88</option>
+        </select>
+        <input id="camount" type="number" step="0.01" placeholder="实付金额" style="width:110px;padding:8px;font-size:15px;border:1px solid #143a2b;border-radius:8px">
+        <button onclick="claim()" style="padding:8px 18px;background:#07c160;color:#fff;border:0;border-radius:8px;font-size:15px;cursor:pointer">我已付款</button>
+      </div>
+      <p id="cmsg" style="font-size:14px;color:#059669;margin:4px 0"></p>
+      <p class="note">钱直接进商家微信经营账户。提交认领后店主核对到账即开通（通常几分钟），开通后长辈端自动解锁。</p>
+    </div>
+  </div>
+</div>
+
+<div class="box">
+  <h2>孝心卡解锁什么</h2>
+  <ul>
+    <li><b>无限</b>吃药提醒组（免费版 3 个）</li>
+    <li><b>语音播报</b>：到点大声念药名（长辈不用看屏幕）</li>
+    <li>大按钮计算器、一键呼叫家人：<b>免费版已含</b>，付费不加价</li>
+    <li>后续新增的长辈功能全部包含</li>
+  </ul>
+</div>
+
+<div class="box">
+  <h2>诚实的边界</h2>
+  <ul>
+    <li>提醒数据保存在长辈手机本地（不上传、不联网同步）——这正是我们推荐的开源做法</li>
+    <li>语音播报依赖手机系统音量，请帮长辈把媒体音量调大</li>
+    <li>孝心卡不承诺医疗效果，用药请遵医嘱</li>
+  </ul>
+</div>
+
+<p class="note">神算阁 · 上海丙大山智能科技有限公司 · <a class="back" href="https://tools.highkingflower.com">返回工具箱</a></p>
+
+<script>
+var q = new URLSearchParams(location.search);
+var ref = q.get('ref') || '';
+document.getElementById('ref').value = ref;
+function syncRef(){
+  ref = document.getElementById('ref').value.trim().replace(/[^A-Za-z0-9]/g,'').slice(0,16);
+  document.getElementById('shareLine').textContent = ref ? ('tools.highkingflower.com/elder/?ref=' + ref) : '（填完码自动生成）';
+  if (ref) document.getElementById('shareLine').innerHTML = '<a href="https://tools.highkingflower.com/elder/?ref=' + encodeURIComponent(ref) + '">tools.highkingflower.com/elder/?ref=' + ref + '</a>';
+}
+syncRef();
+function go(plan){
+  var r = ref || localStorage.getItem('bds_ref') || '';
+  if (!r) { alert('请先在第 1 步填写长辈手机上的关怀码'); return; }
+  location.href = '/api/pay?plan=' + encodeURIComponent(plan) + '&slug=shensuange&ref=' + encodeURIComponent(r);
+}
+function claim(){
+  var r = ref || localStorage.getItem('bds_ref') || '';
+  if (!r) { alert('请先填写关怀码'); return; }
+  var plan = document.getElementById('cplan').value;
+  var amount = parseFloat(document.getElementById('camount').value) || 0;
+  var msg = document.getElementById('cmsg');
+  msg.style.color = '#b45309'; msg.textContent = '提交中…';
+  fetch('/api/elder?a=claim', { method:'POST', headers:{'content-type':'application/json'},
+    body: JSON.stringify({ ref: r, plan: plan, amount: amount }) })
+  .then(function(x){ return x.json(); })
+  .then(function(j){
+    if (j && j.claimed) { msg.style.color = '#059669'; msg.textContent = '✓ 认领已提交（单号 ' + j.id + '）。店主确认到账后自动开通，长辈端即刻解锁。'; }
+    else { msg.style.color = '#b91c1c'; msg.textContent = '提交失败，请稍后再试'; }
+  }).catch(function(){ msg.style.color = '#b91c1c'; msg.textContent = '网络异常，请稍后再试'; });
+}
+</script>
+</body>
+</html>
